@@ -103,6 +103,14 @@ config NETDEVICES
 
 if NETDEVICES
 
+config MSTAR_EMAC
+	bool "SigmaStar EMAC"
+	depends on ARCH_MSTARV7 && MACH_INFINITY6E && DM_ETH && CLK_MSTAR
+	depends on PHYLIB
+	help
+	  Support the 10/100 EMAC and internal Albany PHY in SigmaStar
+	  Infinity6E SoCs.
+
 config PHY_GIGE
 	bool "Enable GbE PHY status parsing and configuration"
 	help

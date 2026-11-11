@@ -77,6 +77,7 @@ obj-$(CONFIG_MEDIATEK_ETH) += mtk_eth/
 obj-$(CONFIG_MPC8XX_FEC) += mpc8xx_fec.o
 obj-$(CONFIG_MT7620_ETH) += mt7620-eth.o
 obj-$(CONFIG_MT7628_ETH) += mt7628-eth.o
+obj-$(CONFIG_MSTAR_EMAC) += mstar_emac.o
 obj-$(CONFIG_MV88E6XXX) += mv88e6xxx.o
 obj-$(CONFIG_MVGBE) += mvgbe.o
 obj-$(CONFIG_MVMDIO) += mvmdio.o
