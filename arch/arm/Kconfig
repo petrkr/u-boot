@@ -772,6 +772,15 @@ config ARCH_S5PC1XX
 	select GPIO_EXTRA_HEADER
 	imply CMD_DM
 
+config ARCH_MSTARV7
+	bool "MStar/SigmaStar ARMv7 SoC support"
+	select CPU_V7A
+	select CREATE_ARCH_SYMLINK
+	select SUPPORT_PASSING_ATAGS
+	help
+	  SigmaStar Infinity camera SoCs. The vendor IPL and IPL_CUST set up
+	  DDR and load U-Boot.
+
 config ARCH_HIGHBANK
 	bool "Calxeda Highbank"
 	select CPU_V7A
@@ -2378,6 +2387,8 @@ source "arch/arm/mach-qemu/Kconfig"
 source "arch/arm/mach-rockchip/Kconfig"
 
 source "arch/arm/mach-s5pc1xx/Kconfig"
+
+source "arch/arm/mach-mstar/Kconfig"
 
 source "arch/arm/mach-sc5xx/Kconfig"
 

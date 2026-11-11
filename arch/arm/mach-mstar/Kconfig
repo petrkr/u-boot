@@ -1,0 +1,48 @@
+if ARCH_MSTARV7
+
+choice
+	prompt "MStar/SigmaStar board"
+	default TARGET_SSC38M_V2
+	help
+	  Select the board to build U-Boot for. The board selects the SoC
+	  family code and its default device tree.
+
+config TARGET_SSC38M_V2
+	bool "SSC_38M_2.0 IP camera module"
+	select SUPPORT_OF_CONTROL
+	select MACH_INFINITY6E
+	help
+	  Generic IP camera module based on the SigmaStar SSC338Q
+	  (Infinity6E), PCB silkscreen "SSC_38M_2.0".
+
+endchoice
+
+config MACH_INFINITY6E
+	bool
+
+if DEBUG_UART
+
+config DEBUG_UART_BASE
+	default 0x1f221000
+
+config DEBUG_UART_CLOCK
+	default 172800000
+
+config DEBUG_UART_SHIFT
+	default 3
+
+endif
+
+config SYS_SOC
+	default "mstar"
+
+config SYS_VENDOR
+	default "mstar"
+
+config SYS_BOARD
+	default "ssc38m-v2"
+
+config SYS_CONFIG_NAME
+	default "mstar"
+
+endif
