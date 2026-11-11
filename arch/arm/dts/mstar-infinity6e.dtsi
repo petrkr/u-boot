@@ -27,6 +27,18 @@
 		status = "disabled";
 	};
 
+	spi@2c00 {
+		compatible = "sstar,infinity6e-fsp";
+		reg = <0x2c00 0x400>, <0x201a00 0x400>, <0x200400 0x200>;
+		reg-names = "fsp-pm", "fsp-nonpm", "bdma";
+		sstar,chiptop = <&chiptop>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&fsp_default>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
 	chiptop: syscon@203c00 {
 		compatible = "syscon";
 		reg = <0x203c00 0x200>;
@@ -66,6 +78,13 @@
 	compatible = "sstar,infinity6e-pinctrl";
 	sstar,chiptop = <&chiptop>;
 	sstar,pmsleep = <&pmsleep>;
+
+	fsp_default: fsp-default-state {
+		pm-spi-pins {
+			groups = "pm_spi";
+			function = "pm_spi";
+		};
+	};
 
 	eth_default: eth-default-state {
 		pm-led-pins {

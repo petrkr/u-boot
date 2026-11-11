@@ -33,3 +33,16 @@
 	pinctrl-0 = <&eth_default>;
 	status = "okay";
 };
+
+&riu {
+	spi@2c00 {
+		status = "okay";
+
+		flash@0 {
+			compatible = "spi-nand";
+			reg = <0>;
+			spi-rx-bus-width = <1>;
+			spi-tx-bus-width = <1>;
+		};
+	};
+};
