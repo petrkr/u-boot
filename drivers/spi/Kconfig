@@ -70,6 +70,14 @@ config AIROHA_SNFI_SPI
 	  used to access SPI memory devices like SPI-NOR or SPI-NAND on
 	  platforms embedding this IP core, like AN7581.
 
+config MSTAR_FSP_SPI
+	bool "SigmaStar FSP SPI memory controller"
+	depends on ARCH_MSTARV7 && MACH_INFINITY6E && PINCTRL_MSTAR && SYSCON
+	select SPI_MEM
+	help
+	  Enable the FSP/QSPI controller found in SigmaStar Infinity6E SoCs.
+	  The controller supports SPI memory devices, including SPI NAND.
+
 config ALTERA_SPI
 	bool "Altera SPI driver"
 	help
