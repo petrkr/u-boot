@@ -44,6 +44,7 @@ obj-$(CONFIG_MMC_OMAP_HS)		+= omap_hsmmc.o
 obj-$(CONFIG_MMC_MXS)			+= mxsmmc.o
 obj-$(CONFIG_MMC_OCTEONTX)		+= octeontx_hsmmc.o
 obj-$(CONFIG_MMC_OWL)			+= owl_mmc.o
+obj-$(CONFIG_MMC_MSTAR_FCIE5)	+= mstar_fcie5.o
 obj-$(CONFIG_MMC_PCI)			+= pci_mmc.o
 obj-$(CONFIG_SUPPORT_EMMC_RPMB) += rpmb.o
 obj-$(CONFIG_MMC_SANDBOX)		+= sandbox_mmc.o
