@@ -37,10 +37,40 @@
 		reg = <0x207000 0x200>, <0x226600 0x200>;
 		#clock-cells = <1>;
 	};
+
+	emac: ethernet@2a2000 {
+		compatible = "sstar,infinity6e-emac";
+		reg = <0x2a2000 0x400>, <0x2a2800 0x600>;
+		reg-names = "emac", "phy";
+		phy-mode = "mii";
+		phy-handle = <&albany_phy>;
+		clocks = <&clkgen SSTAR_INFINITY6E_CLK_EMAC_AHB>,
+			 <&clkgen SSTAR_INFINITY6E_CLK_EMAC_RX>,
+			 <&clkgen SSTAR_INFINITY6E_CLK_EMAC_TX>;
+		clock-names = "ahb", "rx", "tx";
+		status = "disabled";
+
+		mdio {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			albany_phy: ethernet-phy@0 {
+				compatible = "ethernet-phy-id0000.0000";
+				reg = <0>;
+			};
+		};
+	};
 };
 
 &gpio {
 	compatible = "sstar,infinity6e-pinctrl";
 	sstar,chiptop = <&chiptop>;
 	sstar,pmsleep = <&pmsleep>;
+
+	eth_default: eth-default-state {
+		pm-led-pins {
+			groups = "pm_led";
+			function = "eth_led";
+		};
+	};
 };

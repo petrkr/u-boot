@@ -27,3 +27,9 @@
 &gpio {
 	status = "okay";
 };
+
+&emac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&eth_default>;
+	status = "okay";
+};
