@@ -38,3 +38,9 @@
 		#clock-cells = <1>;
 	};
 };
+
+&gpio {
+	compatible = "sstar,infinity6e-pinctrl";
+	sstar,chiptop = <&chiptop>;
+	sstar,pmsleep = <&pmsleep>;
+};

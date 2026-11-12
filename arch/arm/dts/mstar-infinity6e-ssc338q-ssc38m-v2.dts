@@ -23,3 +23,7 @@
 &pm_uart {
 	status = "okay";
 };
+
+&gpio {
+	status = "okay";
+};
