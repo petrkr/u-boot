@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+/dts-v1/;
+
+#include "mstar-infinity6e-ssc338q.dtsi"
+
+/ {
+	model = "SSC_38M_2.0 IP camera module";
+	compatible = "sstar,ssc38m-v2", "mstar,infinity6e";
+
+	aliases {
+		serial0 = &pm_uart;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&pm_uart {
+	status = "okay";
+};

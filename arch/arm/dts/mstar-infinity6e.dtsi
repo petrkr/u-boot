@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+#include "mstar-v7.dtsi"
+
+&cpus {
+	cpu1: cpu@1 {
+		device_type = "cpu";
+		compatible = "arm,cortex-a7";
+		reg = <0x1>;
+		clocks = <&cpupll>;
+		clock-names = "cpuclk";
+	};
+};
+
+&pm_uart {
+	clock-frequency = <172800000>;
+};
+
+&riu {
+	smpctrl: smpctrl@204000 {
+		reg = <0x204000 0x200>;
+		status = "disabled";
+	};
+};

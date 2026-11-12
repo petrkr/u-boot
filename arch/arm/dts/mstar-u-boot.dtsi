@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+&soc {
+	bootph-pre-ram;
+};
+
+&riu {
+	bootph-pre-ram;
+};
+
+&pm_uart {
+	bootph-pre-ram;
+};
