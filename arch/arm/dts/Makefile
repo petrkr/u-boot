@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0+
 
+dtb-$(CONFIG_TARGET_SSC38M_V2) += mstar-infinity6e-ssc338q-ssc38m-v2.dtb
+
 dtb-$(CONFIG_TARGET_SMARTWEB) += at91sam9260-smartweb.dtb
 dtb-$(CONFIG_TARGET_TAURUS) += at91sam9g20-taurus.dtb
 dtb-$(CONFIG_TARGET_CORVUS) += at91sam9g45-corvus.dtb

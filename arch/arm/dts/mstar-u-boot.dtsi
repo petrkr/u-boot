@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ *
+ * U-Boot additions to the kernel device tree. Nothing here changes the
+ * hardware description, it only marks the nodes needed before relocation.
+ */
+
+&clocks {
+	bootph-pre-ram;
+};
+
+&xtal {
+	bootph-pre-ram;
+};
+
+&xtal_div2 {
+	bootph-pre-ram;
+};
+
+&soc {
+	bootph-pre-ram;
+};
+
+&riu {
+	bootph-pre-ram;
+};
+
+&mpll {
+	bootph-pre-ram;
+};
+
+&clkgen {
+	bootph-pre-ram;
+};
+
+&pm_uart {
+	bootph-pre-ram;
+};

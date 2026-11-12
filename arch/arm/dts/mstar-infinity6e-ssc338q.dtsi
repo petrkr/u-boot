@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+#include "mstar-infinity6e.dtsi"
+
+&smpctrl {
+	compatible = "sstar,ssc338q-smpctrl", "mstar,smpctrl";
+	status = "okay";
+};

@@ -1,0 +1,195 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+/dts-v1/;
+#include "mstar-infinity6e-ssc338q.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/gpio/sstar,ssc338q-gpio.h>
+#include <dt-bindings/input/linux-event-codes.h>
+
+/*
+ * Board signals without a kernel driver:
+ * - IR-cut filter: SAR_GPIO0/SAR_GPIO1 drive an H-bridge, pulse one of
+ *   them high for about 200 ms to switch the filter
+ * - light level: the photoresistor of the IR illuminator board on SAR ADC
+ *   channel 2, high in the dark; the illuminator switches itself
+ * - speaker amplifier enable: PM_GPIO3
+ */
+
+/ {
+	model = "SSC_38M_2.0 IP camera module";
+	compatible = "sstar,ssc38m-v2", "mstar,infinity6e";
+
+	aliases {
+		ethernet0 = &emac;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		serial0 = &pm_uart;
+		serial1 = &fuart;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	keys {
+		compatible = "gpio-keys-polled";
+		poll-interval = <50>;
+
+		/* Button on the cable harness, its meaning is left to userspace */
+		key-user {
+			label = "user";
+			gpios = <&pinctrl SSC338Q_GPIO_PM_GPIO4 GPIO_ACTIVE_LOW>;
+			linux,code = <BTN_0>;
+		};
+	};
+
+	/* Core supply, set by the VID inputs of the step-down converter */
+	vcc_core: regulator-vcc-core {
+		compatible = "regulator-gpio";
+		regulator-name = "vcc-core";
+		regulator-min-microvolt = <900000>;
+		regulator-max-microvolt = <1000000>;
+		regulator-always-on;
+		regulator-boot-on;
+		gpios = <&pinctrl SSC338Q_GPIO_PM_GPIO7 GPIO_ACTIVE_HIGH>,
+			<&pinctrl SSC338Q_GPIO_PM_GPIO8 GPIO_ACTIVE_HIGH>;
+		gpios-states = <1 0>;
+		states = <850000 0x0>,
+			 <900000 0x1>,
+			 <950000 0x2>,
+			 <1000000 0x3>;
+	};
+
+	vcc_sd: regulator-vcc-sd {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc-sd";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&pinctrl SSC338Q_GPIO_SD0_GPIO0 GPIO_ACTIVE_LOW>;
+		startup-delay-us = <20000>;
+		off-on-delay-us = <25000>;
+	};
+
+	/* Power of the on-board USB WiFi module */
+	vcc_wifi: regulator-vcc-wifi {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc-wifi";
+		gpio = <&pinctrl SSC338Q_GPIO_FUART_CTS GPIO_ACTIVE_LOW>;
+	};
+};
+
+&bach {
+	status = "okay";
+};
+
+&cpu0 {
+	cpu-supply = <&vcc_core>;
+};
+
+&cpu1 {
+	cpu-supply = <&vcc_core>;
+};
+
+&emac {
+	status = "okay";
+};
+
+&fsp {
+	status = "okay";
+
+	flash@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-rx-bus-width = <4>;
+	};
+};
+
+/* Header RX/TX */
+&fuart {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fuart_pins>;
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+};
+
+/* Image sensor */
+&i2c1 {
+	status = "okay";
+};
+
+&pinctrl {
+	gpio-line-names =
+		"GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO4", "GPIO5",
+		"GPIO6", "GPIO7", "GPIO8", "GPIO9", "GPIO10", "GPIO11",
+		"GPIO12", "GPIO13", "GPIO14", "GPIO15", "SD0_GPIO0",
+		"SD0_CDZ", "SD0_D1", "SD0_D0", "SD0_CLK", "SD0_CMD",
+		"SD0_D3", "SD0_D2", "I2S0_MCLK", "I2S0_BCK", "I2S0_WCK",
+		"I2S0_DI", "I2S0_DO", "I2C0_SCL", "I2C0_SDA", "ETH_LED0",
+		"ETH_LED1", "UART_RX", "UART_TX", "FUART_CTS", "FUART_RTS",
+		"SD1_CDZ", "SD1_D1", "SD1_D0", "SD1_CLK", "SD1_CMD",
+		"SD1_D3", "SD1_D2", "SD1_GPIO0", "SD1_GPIO1", "SPI_CZ",
+		"SPI_CK", "SPI_DI", "SPI_DO", "SPI_WPZ", "SPI_HLD",
+		"SR0_IO00", "SR0_IO01", "SR0_IO02", "SR0_IO03", "SR0_IO04",
+		"SR0_IO05", "SR0_IO06", "SR0_IO07", "SR0_IO08", "SR0_IO09",
+		"SR0_IO10", "SR0_IO11", "SR0_IO12", "SR0_IO13", "SR0_IO14",
+		"SR0_IO15", "SR0_IO16", "SR0_IO17", "SR0_IO18", "SR0_IO19",
+		"SR1_IO00", "SR1_IO01", "SR1_IO02", "SR1_IO03", "SR1_IO04",
+		"SR1_IO05", "SR1_IO06", "SR1_IO07", "SR1_IO08", "SR1_IO09",
+		"SR1_IO10", "SR1_IO11", "SR1_IO12", "SR1_IO13", "SR1_IO14",
+		"SR1_IO15", "SR1_IO16", "SR1_IO17", "SR1_IO18", "SR1_IO19",
+		"ALARM_IN", "ALARM_OUT", "PM_GPIO2", "PM_GPIO3", "PM_GPIO4",
+		"PM_GPIO5", "PM_GPIO6", "PM_GPIO7", "PM_GPIO8", "PM_GPIO9",
+		"PM_GPIO10", "SAR_GPIO0", "SAR_GPIO1", "SAR_GPIO2",
+		"SAR_GPIO3";
+
+	fuart_pins: fuart-state {
+		fuart-pins {
+			groups = "fuart";
+			function = "fuart";
+		};
+	};
+
+	sar_light: sar-light-state {
+		sar2-pins {
+			groups = "sar2";
+			function = "adc";
+		};
+	};
+};
+
+&pm_uart {
+	status = "okay";
+};
+
+&pwm {
+	status = "okay";
+};
+
+&sar {
+	pinctrl-names = "default";
+	pinctrl-0 = <&sar_light>;
+	status = "okay";
+};
+
+&sd0 {
+	bus-width = <4>;
+	cd-gpios = <&pinctrl SSC338Q_GPIO_SD0_CDZ GPIO_ACTIVE_LOW>;
+	vmmc-supply = <&vcc_sd>;
+	status = "okay";
+};
+
+&usb {
+	vbus-supply = <&vcc_wifi>;
+	status = "okay";
+};
+
+&usb_phy {
+	status = "okay";
+};

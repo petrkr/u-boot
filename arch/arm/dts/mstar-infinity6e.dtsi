@@ -1,0 +1,454 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Register information from the SigmaStar Linux 4.9 BSP maintained by OpenIPC
+ * (https://github.com/OpenIPC/linux, branch sigmastar-infinity6e).
+ *
+ * Copyright (c) 2026 Petr Kracik <petrkr@petrkr.net>
+ */
+
+#include "mstar-v7.dtsi"
+
+#include <dt-bindings/clock/sstar,ssc338q-clkgen.h>
+#include <dt-bindings/thermal/thermal.h>
+
+&clocks {
+	/* USB PLL outputs, enabled by the boot ROM loader */
+	upll_384m: upll-384m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <384000000>;
+	};
+
+	upll_320m: upll-320m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <320000000>;
+	};
+
+	/* UTMI PLL outputs, enabled by the boot ROM loader */
+	utmi_480m: utmi-480m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <480000000>;
+	};
+
+	utmi_240m: utmi-240m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <240000000>;
+	};
+
+	utmi_192m: utmi-192m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <192000000>;
+	};
+
+	utmi_160m: utmi-160m {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <160000000>;
+	};
+
+	mpll_345m: mpll-345m {
+		#clock-cells = <0>;
+		compatible = "fixed-factor-clock";
+		clocks = <&mpll MSTAR_MSC313_MPLL_DIV2>;
+		clock-mult = <4>;
+		clock-div = <5>;
+	};
+};
+
+/ {
+	cpu_opp_table: opp-table-cpu {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <900000>;
+			clock-latency-ns = <300000>;
+		};
+
+		opp-600000000 {
+			opp-hz = /bits/ 64 <600000000>;
+			opp-microvolt = <900000>;
+			clock-latency-ns = <300000>;
+		};
+
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <900000>;
+			clock-latency-ns = <300000>;
+		};
+
+		opp-1000000000 {
+			opp-hz = /bits/ 64 <1000000000>;
+			opp-microvolt = <900000>;
+			clock-latency-ns = <300000>;
+		};
+	};
+
+	soc_temp: thermal-sensor {
+		compatible = "generic-adc-thermal";
+		#thermal-sensor-cells = <0>;
+		io-channels = <&sar 4>;
+		io-channel-names = "sensor-channel";
+	};
+
+	thermal-zones {
+		soc-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <1000>;
+			thermal-sensors = <&soc_temp>;
+
+			trips {
+				soc_alert: soc-alert {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+
+				soc-crit {
+					temperature = <105000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&soc_alert>;
+					cooling-device =
+						<&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+						<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+	};
+};
+
+&cpu0 {
+	operating-points-v2 = <&cpu_opp_table>;
+	#cooling-cells = <2>;
+};
+
+&cpus {
+	cpu1: cpu@1 {
+		device_type = "cpu";
+		compatible = "arm,cortex-a7";
+		reg = <0x1>;
+		clocks = <&cpupll>;
+		clock-names = "cpuclk";
+		operating-points-v2 = <&cpu_opp_table>;
+		#cooling-cells = <2>;
+	};
+};
+
+&pm_uart {
+	/delete-property/ clock-frequency;
+	clocks = <&clkgen SSC338Q_CLKGEN_UART0>;
+};
+
+&soc {
+	dma-ranges;
+};
+
+&riu {
+	/* Bus masters address DRAM through the MIU starting at 0 */
+	dma-ranges = <0x00000000 0x20000000 0x20000000>;
+
+	sar: adc@2800 {
+		compatible = "sstar,ssc338q-sar-adc", "syscon";
+		reg = <0x2800 0x200>;
+		#io-channel-cells = <1>;
+		nvmem-cells = <&otp_ts_calib>;
+		nvmem-cell-names = "ts-calib";
+		sstar,pmsleep = <&pmsleep>;
+	};
+
+	bdma: dma-controller@200400 {
+		compatible = "sstar,ssc338q-bdma";
+		reg = <0x200400 0x200>;
+		interrupts-extended = <&intc_irq GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
+				      <&intc_irq GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
+				      <&intc_irq GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>,
+				      <&intc_irq GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_BDMA>;
+		#dma-cells = <2>;
+	};
+
+	fsp: spi@201a00 {
+		compatible = "sstar,ssc338q-fsp";
+		reg = <0x201a00 0x400>;
+		clocks = <&clkgen SSC338Q_CLKGEN_SPI_FLASH>;
+		assigned-clocks = <&clkgen SSC338Q_CLKGEN_SPI_FLASH>;
+		assigned-clock-parents = <&mpll MSTAR_MSC313_MPLL_DIV10>;
+		dmas = <&bdma 0 5>, <&bdma 1 11>;
+		dma-names = "rx", "tx";
+		pinctrl-names = "default";
+		pinctrl-0 = <&fsp_default>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	otp: efuse@203000 {
+		compatible = "sstar,ssc338q-otp";
+		reg = <0x203000 0x200>;
+
+		nvmem-layout {
+			compatible = "fixed-layout";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			otp_chip_id: chip-id@a8 {
+				reg = <0xa8 0x6>;
+			};
+
+			otp_ts_calib: ts-calib@b2 {
+				reg = <0xb2 0x2>;
+				bits = <6 10>;
+			};
+		};
+	};
+
+	pwm: pwm@203200 {
+		compatible = "sstar,ssc338q-pwm";
+		reg = <0x203200 0x400>;
+		clocks = <&clkgen SSC338Q_CLKGEN_PWM>;
+		#pwm-cells = <3>;
+		status = "disabled";
+	};
+
+	chiptop: syscon@203c00 {
+		compatible = "sstar,ssc338q-chiptop", "syscon";
+		reg = <0x203c00 0x200>;
+	};
+
+	smpctrl: smpctrl@204000 {
+		reg = <0x204000 0x200>;
+		status = "disabled";
+	};
+
+	clkgen: clock-controller@207000 {
+		compatible = "sstar,ssc338q-clkgen";
+		reg = <0x207000 0x200>;
+		#clock-cells = <1>;
+		clocks = <&mpll MSTAR_MSC313_MPLL_DIV5>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV6>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV7>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV10>,
+			 <&xtal_div2>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV2>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV3>,
+			 <&mpll MSTAR_MSC313_MPLL_DIV4>,
+			 <&xtal>,
+			 <&upll_384m>,
+			 <&upll_320m>,
+			 <&utmi_480m>,
+			 <&utmi_240m>,
+			 <&utmi_192m>,
+			 <&utmi_160m>,
+			 <&mpll_345m>;
+		clock-names = "mpll-div5", "mpll-div6", "mpll-div7",
+			      "mpll-div10", "xtal-div2", "mpll-div2",
+			      "mpll-div3", "mpll-div4", "xtal",
+			      "upll-384m", "upll-320m", "utmi-480m",
+			      "utmi-240m", "utmi-192m", "utmi-160m",
+			      "mpll-345m";
+	};
+
+	pinctrl: pinctrl@207800 {
+		compatible = "sstar,ssc338q-pinctrl";
+		reg = <0x207800 0x200>, <0x7e00 0x100>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		sstar,chiptop = <&chiptop>;
+		sstar,pmsleep = <&pmsleep>;
+		sstar,sar = <&sar>;
+
+		i2c0_default: i2c0-default-state {
+			i2c0-pins {
+				groups = "i2c0";
+				function = "i2c0";
+			};
+		};
+
+		i2c1_default: i2c1-default-state {
+			i2c1-pins {
+				groups = "i2c1";
+				function = "i2c1";
+			};
+		};
+
+		sd0_default: sd0-default-state {
+			sd0-pins {
+				groups = "sd0";
+				function = "sd0";
+			};
+
+			sd0-data-pins {
+				pins = "SD0_D0", "SD0_D1", "SD0_D2", "SD0_D3",
+				       "SD0_CMD";
+				bias-pull-up;
+				input-enable;
+			};
+
+			sd0-clk-pins {
+				pins = "SD0_CLK";
+				bias-disable;
+				input-enable;
+			};
+
+			sd0-cdz-pins {
+				groups = "sd0_cdz";
+				function = "sd0_cdz";
+				input-enable;
+			};
+		};
+
+		fsp_default: fsp-default-state {
+			pm-spi-pins {
+				groups = "pm_spi";
+				function = "pm_spi";
+			};
+		};
+
+		sd0_sleep: sd0-sleep-state {
+			sd0-pins {
+				groups = "sd0";
+				function = "gpio";
+				bias-disable;
+				output-low;
+			};
+
+			sd0-cdz-pins {
+				groups = "sd0_cdz";
+				function = "gpio";
+				input-enable;
+			};
+		};
+	};
+
+	fuart: serial@220400 {
+		compatible = "ns16550a";
+		reg = <0x220400 0x100>;
+		reg-shift = <3>;
+		interrupts-extended = <&intc_irq GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_FUART>;
+		status = "disabled";
+	};
+
+	uart1: serial@221200 {
+		compatible = "ns16550a";
+		reg = <0x221200 0x100>;
+		reg-shift = <3>;
+		interrupts-extended = <&intc_irq GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_UART1>;
+		status = "disabled";
+	};
+
+	i2c0: i2c@223000 {
+		compatible = "sstar,ssc338q-i2c";
+		reg = <0x223000 0x200>;
+		clocks = <&clkgen SSC338Q_CLKGEN_MIIC0>;
+		assigned-clocks = <&clkgen SSC338Q_CLKGEN_MIIC0>;
+		assigned-clock-parents = <&xtal_div2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2c0_default>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	i2c1: i2c@223200 {
+		compatible = "sstar,ssc338q-i2c";
+		reg = <0x223200 0x200>;
+		clocks = <&clkgen SSC338Q_CLKGEN_MIIC1>;
+		assigned-clocks = <&clkgen SSC338Q_CLKGEN_MIIC1>;
+		assigned-clock-parents = <&xtal_div2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2c1_default>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	rng: rng@224400 {
+		compatible = "sstar,ssc338q-rng";
+		reg = <0x224400 0x10>;
+		clocks = <&clkgen SSC338Q_CLKGEN_AESDMA>;
+	};
+
+	scgp: clock-controller@226600 {
+		compatible = "sstar,ssc338q-scgp";
+		reg = <0x226600 0x200>;
+		#clock-cells = <1>;
+	};
+
+	sd0: mmc@282600 {
+		compatible = "sstar,ssc338q-fcie";
+		reg = <0x282600 0x100>;
+		interrupts-extended = <&intc_irq GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_SD>;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&sd0_default>;
+		pinctrl-1 = <&sd0_sleep>;
+		status = "disabled";
+	};
+
+	usb_phy: phy@284200 {
+		compatible = "sstar,ssc338q-usb2-phy";
+		reg = <0x284200 0x200>, <0x284400 0x200>;
+		reg-names = "utmi", "bc";
+		#phy-cells = <0>;
+		status = "disabled";
+	};
+
+	usb: usb@284800 {
+		compatible = "sstar,ssc338q-ehci";
+		reg = <0x284800 0x200>, <0x284600 0x200>;
+		reg-names = "uhc", "usbc";
+		interrupts-extended = <&intc_irq GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+		phys = <&usb_phy>;
+		phy-names = "usb";
+		status = "disabled";
+	};
+
+	bach: audio-controller@2a0400 {
+		compatible = "sstar,ssc338q-bach";
+		reg = <0x2a0400 0x600>, <0x206800 0x200>;
+		reg-names = "bach", "atop";
+		interrupts-extended = <&intc_irq GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_BACH>;
+		assigned-clocks = <&clkgen SSC338Q_CLKGEN_BACH>;
+		assigned-clock-parents = <&upll_384m>;
+		status = "disabled";
+	};
+
+	emac: ethernet@2a2000 {
+		compatible = "sstar,ssc338q-emac";
+		reg = <0x2a2000 0x800>, <0x2a2800 0x600>;
+		interrupts-extended = <&intc_irq GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&clkgen SSC338Q_CLKGEN_EMAC_AHB>,
+			 <&clkgen SSC338Q_CLKGEN_EMAC_AHB>,
+			 <&scgp SSC338Q_SCGP_EMAC_TX>,
+			 <&scgp SSC338Q_SCGP_EMAC_RX>;
+		clock-names = "pclk", "hclk", "tx_clk", "rx_clk";
+		phy-mode = "mii";
+		phy-handle = <&albany_phy>;
+		status = "disabled";
+
+		mdio {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			/* The internal PHY reports an ID of 0 */
+			albany_phy: ethernet-phy@0 {
+				compatible = "ethernet-phy-id0000.0000";
+				reg = <0>;
+			};
+		};
+	};
+};
