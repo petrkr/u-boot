@@ -237,6 +237,14 @@ config PINCTRL_PIC32
 	  SoCs. This driver is controlled by a device tree node which
 	  contains both GPIO definition and pin control functions.
 
+config PINCTRL_MSTAR
+	bool "SigmaStar Infinity6E pin controller and GPIO"
+	depends on PINCTRL_FULL && DM_GPIO && ARCH_MSTARV7 && SYSCON
+	select PINCONF
+	help
+	  Enable the pin controller and GPIO found in SigmaStar Infinity6E
+	  SoCs.
+
 config PINCTRL_QCA953X
 	bool "QCA/Athores qca953x pin control driver"
 	depends on DM && SOC_QCA953X

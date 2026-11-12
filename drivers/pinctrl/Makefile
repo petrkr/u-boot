@@ -30,6 +30,7 @@ obj-$(CONFIG_PINCTRL_QCOM)		+= qcom/
 obj-$(CONFIG_PINCTRL_QE)		+= pinctrl-qe-io.o
 obj-$(CONFIG_$(PHASE_)PINCTRL_ROCKCHIP)	+= rockchip/
 obj-$(CONFIG_PINCTRL_SANDBOX)		+= pinctrl-sandbox.o
+obj-$(CONFIG_PINCTRL_MSTAR)	+= pinctrl-mstar.o
 obj-$(CONFIG_PINCTRL_SCMI)		+= pinctrl-scmi.o
 obj-$(CONFIG_PINCTRL_SINGLE)		+= pinctrl-single.o
 obj-$(CONFIG_$(PHASE_)PINCTRL_SPACEMIT_K1) += spacemit/
