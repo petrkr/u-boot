@@ -168,6 +168,12 @@ config CLK_K210_SET_RATE
 	  Add functionality to calculate new rates for K210 PLLs. Enabling this
 	  feature adds around 1K to U-Boot's final size.
 
+config CLK_MSTAR
+	bool "SigmaStar Infinity6E clock controller"
+	depends on CLK && ARCH_MSTARV7
+	help
+	  Enable the clock controller found in SigmaStar Infinity6E SoCs.
+
 config CLK_MPC83XX
 	bool "Enable MPC83xx clock driver"
 	depends on CLK && MPC83xx
