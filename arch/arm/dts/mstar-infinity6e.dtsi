@@ -5,6 +5,8 @@
 
 #include "mstar-v7.dtsi"
 
+#include <dt-bindings/clock/sstar-infinity6e.h>
+
 &cpus {
 	cpu1: cpu@1 {
 		device_type = "cpu";
@@ -23,5 +25,11 @@
 	smpctrl: smpctrl@204000 {
 		reg = <0x204000 0x200>;
 		status = "disabled";
+	};
+
+	clkgen: clock-controller@207000 {
+		compatible = "sstar,infinity6e-clk";
+		reg = <0x207000 0x200>, <0x226600 0x200>;
+		#clock-cells = <1>;
 	};
 };
