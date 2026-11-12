@@ -27,6 +27,11 @@
 		status = "disabled";
 	};
 
+	chiptop: syscon@203c00 {
+		compatible = "syscon";
+		reg = <0x203c00 0x200>;
+	};
+
 	clkgen: clock-controller@207000 {
 		compatible = "sstar,infinity6e-clk";
 		reg = <0x207000 0x200>, <0x226600 0x200>;
