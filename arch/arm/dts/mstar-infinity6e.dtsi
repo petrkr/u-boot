@@ -50,6 +50,17 @@
 		#clock-cells = <1>;
 	};
 
+	mmc@282600 {
+		compatible = "sstar,infinity6e-fcie5";
+		reg = <0x282600 0x100>;
+		clocks = <&clkgen SSTAR_INFINITY6E_CLK_FCIE>;
+		clock-names = "fcie";
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&sd0_default>;
+		pinctrl-1 = <&sd0_sleep>;
+		status = "disabled";
+	};
+
 	emac: ethernet@2a2000 {
 		compatible = "sstar,infinity6e-emac";
 		reg = <0x2a2000 0x400>, <0x2a2800 0x600>;
@@ -78,6 +89,46 @@
 	compatible = "sstar,infinity6e-pinctrl";
 	sstar,chiptop = <&chiptop>;
 	sstar,pmsleep = <&pmsleep>;
+
+	sd0_default: sd0-default-state {
+		sd0-pins {
+			groups = "sd0";
+			function = "sd0";
+		};
+
+		sd0-data-pins {
+			pins = "SD0_D0", "SD0_D1", "SD0_D2", "SD0_D3", "SD0_CMD";
+			bias-pull-up;
+			input-enable;
+		};
+
+		sd0-clk-pins {
+			pins = "SD0_CLK";
+			bias-disable;
+			input-enable;
+		};
+
+		sd0-cdz-pins {
+			groups = "sd0_cdz";
+			function = "sd0_cdz";
+			input-enable;
+		};
+	};
+
+	sd0_sleep: sd0-sleep-state {
+		sd0-pins {
+			groups = "sd0";
+			function = "gpio";
+			bias-disable;
+			output-low;
+		};
+
+		sd0-cdz-pins {
+			groups = "sd0_cdz";
+			function = "gpio";
+			input-enable;
+		};
+	};
 
 	fsp_default: fsp-default-state {
 		pm-spi-pins {

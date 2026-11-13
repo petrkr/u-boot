@@ -7,6 +7,9 @@
 
 #include "mstar-infinity6e-ssc338q.dtsi"
 
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/gpio/sstar-infinity6e-gpio.h>
+
 / {
 	model = "SSC_38M_2.0 IP camera module";
 	compatible = "sstar,ssc38m-v2", "mstar,infinity6e";
@@ -17,6 +20,16 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
+	};
+
+	vcc_sd: regulator-vcc-sd {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc-sd";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio SSTAR_INFINITY6E_GPIO_SD0_GPIO0 GPIO_ACTIVE_LOW>;
+		startup-delay-us = <20000>;
+		off-on-delay-us = <25000>;
 	};
 };
 
@@ -35,6 +48,14 @@
 };
 
 &riu {
+	mmc@282600 {
+		cd-gpios = <&gpio SSTAR_INFINITY6E_GPIO_SD0_CDZ GPIO_ACTIVE_LOW>;
+		vmmc-supply = <&vcc_sd>;
+		bus-width = <4>;
+		max-frequency = <48000000>;
+		status = "okay";
+	};
+
 	spi@2c00 {
 		status = "okay";
 
